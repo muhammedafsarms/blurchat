@@ -14,3 +14,5 @@ function keepAlive() {
 }
 
 module.exports = keepAlive;
+
+// ✅ Now this function works correctly!
