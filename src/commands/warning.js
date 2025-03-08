@@ -1,39 +1,19 @@
-const { bot } = require("../bot");
-const { isAdmin } = require("../utils/adminUtils");
-const User = require("../models/User");
+const { isAdmin } = require('../utils/admin'); // Fix import path
+const { Telegraf } = require('telegraf');
 
-bot.command("warning", async (ctx) => {
-    const adminId = ctx.from.id;
-    
-    if (!isAdmin(adminId)) {
-        return ctx.reply("❌ You are not an admin.");
+module.exports = async (ctx) => {
+    const userId = ctx.from.id;
+    if (!isAdmin(userId)) {
+        return ctx.reply("🚫 You are not authorized to use this command.");
     }
 
-    const args = ctx.message.text.split(" ");
-    if (args.length < 3) {
+    const args = ctx.message.text.split(" ").slice(1);
+    if (args.length < 2) {
         return ctx.reply("⚠️ Usage: /warning <user_id> <reason>");
     }
 
-    const userId = args[1];
-    const reason = args.slice(2).join(" ");
+    const [warnedUserId, ...reasonParts] = args;
+    const reason = reasonParts.join(" ");
 
-    try {
-        let user = await User.findOne({ telegramId: userId });
-
-        if (!user) {
-            return ctx.reply("❌ User not found.");
-        }
-
-        user.warnings = (user.warnings || 0) + 1;
-        await user.save();
-
-        ctx.telegram.sendMessage(userId, `⚠️ You have received a warning from an admin:\n"${reason}"`);
-
-        return ctx.reply(`✅ Warning sent to ${userId}. They now have ${user.warnings} warnings.`);
-    } catch (err) {
-        console.error("Error issuing warning:", err);
-        return ctx.reply("❌ Failed to issue warning.");
-    }
-});
-
-module.exports = bot;
+    ctx.reply(`⚠️ User ${warnedUserId} has been warned.\nReason: ${reason}`);
+};
