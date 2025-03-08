@@ -8,7 +8,7 @@ const { handleNext } = require('./commands/next');
 const { handleLeave } = require('./commands/leave');
 const { handleReport } = require('./commands/report');
 const { handleAdmin } = require('./commands/admin');
-
+const { handleWarning } = require("./commands/warning");
 
 const config = require('./config/config');
 
